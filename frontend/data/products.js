@@ -2,6 +2,7 @@
 const products = [
     {
         
+        _id: 1,
         name: "Airpods",
         image: require("../../assets/images/airpods.jpg"),
         description:
@@ -14,6 +15,7 @@ const products = [
         numReviews: 24,
     },
     {
+        _id: 2,
         name: "Airtags",
         image: require("../../assets/images/airtag.jpg"),
         description:
@@ -26,6 +28,7 @@ const products = [
         numReviews: 71,
     },
     {
+        _id: 3,
         name: "Polishing Cloth",
         image: require("../../assets/images/cloth.jpg"),
         description:
@@ -38,6 +41,7 @@ const products = [
         numReviews: 109,
     },
     {
+        _id: 4,
         name: "iMac",
         image: require("../../assets/images/desktop.jpg"),
         description:
@@ -50,6 +54,7 @@ const products = [
         numReviews: 819,
     },
     {
+        _id: 5,
         name: "HomePod",
         image: require("../../assets/images/homepod.jpg"),
         description:
@@ -62,6 +67,7 @@ const products = [
         numReviews: 1419,
     },
     {
+        _id: 6,
         name: "MacBook Pro",
         image: require("../../assets/images/mac.jpg"),
         description:
@@ -74,6 +80,7 @@ const products = [
         numReviews: 11519,
     },
     {
+        _id: 7,
         name: "Magic Mouse",
         image: require("../../assets/images/mouse.jpg"),
         description:
@@ -86,6 +93,7 @@ const products = [
         numReviews: 738,
     },
     {
+        _id: 8,
         name: "iPad Pro",
         image: require("../../assets/images/pad.jpg"),
         description:
@@ -98,6 +106,7 @@ const products = [
         numReviews: 71938,
     },
     {
+        _id: 9,
         name: "Apple Pencil",
         image: require("../../assets/images/pencil.jpg"),
         description:
@@ -110,6 +119,7 @@ const products = [
         numReviews: 29101,
     },
     {
+        _id: 10,
         name: "iPhone 14 Pro",
         image: require("../../assets/images/phone.jpg"),
         description:
@@ -122,6 +132,7 @@ const products = [
         numReviews: 192819,
     },
     {
+        _id: 11,
         name: "MagSafe Battery",
         image: require("../../assets/images/powerbank.jpg"),
         description:
@@ -134,6 +145,7 @@ const products = [
         numReviews: 12012,
     },
     {
+        _id: 12,
         name: "Apple TV 4K",
         image: require("../../assets/images/tv.jpg"),
         description:
@@ -146,6 +158,7 @@ const products = [
         numReviews: 9729,
     },
     {
+        _id: 13,
         name: "Apple Watch Ultra",
         image: require("../../assets/images/watch.jpg"),
         description:

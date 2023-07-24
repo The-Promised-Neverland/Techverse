@@ -7,21 +7,13 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../slices/cartSlice";
+import { useDispatch } from "react-redux";
+import { addToCart, updateCartAsync } from "../slices/cartSlice";
 
 const ProductScreen = ({ route }) => {
   const { productData } = route.params;
 
-  const cart = useSelector((state) => state.cart);
-  const { cartItems } = cart;
-
   const dispatch = useDispatch();
-  
-  const handleAddToCart = () => {
-    // Dispatch the addToCart action with the selected productData and quantity
-    dispatch(addToCart({ ...productData, qty: selectedQuantity }));
-  };
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
@@ -31,6 +23,20 @@ const ProductScreen = ({ route }) => {
   const handleQuantityChange = (quantity) => {
     setSelectedQuantity(quantity);
     setShowDropdown(false);
+  };
+
+  const handleAddToCart = () => {
+    // Dispatch the addToCart action with the selected productData and quantity
+    const cartSchema = {
+      product: productData._id, // id of the product
+      name: productData.name,
+      image: productData.image,
+      price: productData.price,
+      countInStock: productData.countInStock,
+      qty: selectedQuantity,
+    };
+    dispatch(addToCart(cartSchema));
+    dispatch(updateCartAsync());
   };
 
   return (
@@ -60,7 +66,10 @@ const ProductScreen = ({ route }) => {
               ))}
             </View>
           )}
-          <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
+          <TouchableOpacity
+            style={styles.addToCartButton}
+            onPress={handleAddToCart}
+          >
             <Text style={styles.addToCartButtonText}>Add to Cart</Text>
           </TouchableOpacity>
         </View>

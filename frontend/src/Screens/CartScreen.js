@@ -8,16 +8,19 @@ import {
   FlatList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { removeFromCart, updateCartAsync } from "../slices/cartSlice";
 
 const CartScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   // Dummy data for the cart items
-  const cartItems = useSelector((state)=>state.cartItems);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const handleRemoveFromCart = (id) => {
-    // Implement the remove item from cart logic here
+    dispatch(removeFromCart(id));
+    dispatch(updateCartAsync());
   };
 
   const handleCheckout = () => {
@@ -91,7 +94,7 @@ const styles = StyleSheet.create({
   },
   itemDetails: {
     flex: 1,
-    marginLeft: 20
+    marginLeft: 20,
   },
   removeButton: {
     alignSelf: "center",
