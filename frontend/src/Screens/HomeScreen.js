@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { StyleSheet, Text, SafeAreaView, FlatList } from "react-native";
+import React from "react";
+import { StyleSheet, SafeAreaView, FlatList } from "react-native";
 import products from "../../data/products";
 import ProductCard from "../components/ProductCard";
 import CarouselView from "../components/Carousel";

@@ -1,36 +1,36 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import React from "react";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons"; // Import Expo vector icons
 import brandImage from "../../../assets/favicon.png";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Header = () => {
   const navigation = useNavigation();
   return (
-    <View style={styles.header}>
+    <SafeAreaView style={styles.header}>
       <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
         <Image source={brandImage} style={styles.brandImage} />
       </TouchableOpacity>
 
       <View style={styles.iconsContainer}>
-        <TouchableOpacity onPress={() => console.log("User icon clicked")}>
+        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
           <View style={styles.iconBackground}>
             <FontAwesome name="user" size={24} color="black" />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => console.log("Cart icon clicked")}>
+        <TouchableOpacity onPress={() => navigation.navigate('CartScreen')}>
           <View style={styles.iconBackground}>
             <FontAwesome5 name="shopping-cart" size={24} color="black" />
           </View>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   header: {
-    marginTop: 30,
     flexDirection: "row", // Arrange content horizontally
     justifyContent: "space-between", // Distribute content evenly along the row
     alignItems: "center", // Center content vertically
