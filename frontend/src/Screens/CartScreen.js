@@ -1,66 +1,51 @@
 import React from "react";
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
   FlatList,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
-import { removeFromCart, updateCartAsync } from "../slices/cartSlice";
+import CardCard from "../components/CartCard";
+import { useSelector } from "react-redux";
+import CartTotalDisplay from "../components/CartTotalDisplay";
 
 const CartScreen = () => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
 
-  // Dummy data for the cart items
   const { cartItems } = useSelector((state) => state.cart);
-
-  const handleRemoveFromCart = (id) => {
-    dispatch(removeFromCart(id));
-    dispatch(updateCartAsync());
-  };
-
-  const handleCheckout = () => {
-    // Implement the checkout logic here
-  };
-
-  const cardCard = ({ item }) => (
-    <View style={styles.cartItem}>
-      <Image source={item.image} style={styles.image} />
-      <View style={styles.itemDetails}>
-        <Text style={{ fontWeight: "bold", fontSize: 20 }}>{item.name}</Text>
-        <Text>${item.price}</Text>
-        <Text>Qty {item.qty}</Text>
-      </View>
-      <TouchableOpacity
-        onPress={() => handleRemoveFromCart(item.product)}
-        style={styles.removeButton}
-      >
-        <Text style={{ color: "white" }}>Remove</Text>
-      </TouchableOpacity>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Shopping Cart</Text>
       {cartItems.length === 0 ? (
-        <Text>Your Cart is Empty!</Text>
+        <View
+          style={{
+            alignSelf: "center",
+            alignContent: "center",
+            marginTop: "50%",
+          }}
+        >
+          <Text style={{ fontSize: 50 }}>Card is empty!</Text>
+        </View>
       ) : (
         <FlatList
           data={cartItems}
           keyExtractor={(item) => item.product}
-          renderItem={cardCard}
+          renderItem={({ item }) => <CardCard item={item} />} // renders each card
           ListFooterComponent={
-            <TouchableOpacity
-              style={styles.checkoutButton}
-              onPress={handleCheckout}
-            >
-              <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
-            </TouchableOpacity>
+            <View>
+              <CartTotalDisplay cartItems={cartItems} />
+              <TouchableOpacity
+                style={styles.checkoutButton}
+                onPress={() => navigation.navigate("ShippingScreen")}
+              >
+                <Text style={styles.checkoutButtonText}>
+                  Proceed to Checkout
+                </Text>
+              </TouchableOpacity>
+            </View>
           }
           showsVerticalScrollIndicator={false}
         />
@@ -73,18 +58,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 0,
   },
   heading: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: "15%",
     alignSelf: "center",
+  },
+  dropdownOptions: {
+    marginTop: 10,
+    flexDirection: "row",
   },
   cartItem: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
+  },
+  dropdownOption: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderWidth: 1,
+    fontSize: 16,
+    marginRight: 10,
   },
   image: {
     width: 100,
@@ -99,8 +94,6 @@ const styles = StyleSheet.create({
   removeButton: {
     alignSelf: "center",
     padding: 8,
-    backgroundColor: "red",
-    borderRadius: 8,
   },
   checkoutButton: {
     backgroundColor: "black",

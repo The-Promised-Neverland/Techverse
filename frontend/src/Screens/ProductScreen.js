@@ -6,24 +6,22 @@ import {
   View,
   TouchableOpacity,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { addToCart, updateCartAsync } from "../slices/cartSlice";
+import { Entypo } from "react-native-vector-icons";
+import { Picker } from "@react-native-picker/picker";
 
 const ProductScreen = ({ route }) => {
   const { productData } = route.params;
 
   const dispatch = useDispatch();
 
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [quantity, setSelectedQuantity] = useState(1);
+  const [notify, setNotify] = useState(null);
 
   const maxQuantityOptions = Math.min(3, productData.countInStock);
-
-  const handleQuantityChange = (quantity) => {
-    setSelectedQuantity(quantity);
-    setShowDropdown(false);
-  };
 
   const handleAddToCart = () => {
     // Dispatch the addToCart action with the selected productData and quantity
@@ -33,63 +31,71 @@ const ProductScreen = ({ route }) => {
       image: productData.image,
       price: productData.price,
       countInStock: productData.countInStock,
-      qty: selectedQuantity,
+      qty: quantity,
     };
     dispatch(addToCart(cartSchema));
     dispatch(updateCartAsync());
+    setNotify(true);
+    setTimeout(() => {
+      setNotify(null);
+    }, 3000);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image source={productData.image} style={styles.image} />
-      <Text style={styles.heading}>{productData.name}</Text>
-      <Text style={styles.description}>{productData.description}</Text>
-      <Text style={styles.price}>Price: ${productData.price}</Text>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <Image source={productData.image} style={styles.image} />
+        <Text style={styles.heading}>{productData.name}</Text>
+        <Text style={styles.description}>{productData.description}</Text>
+        <Text style={styles.price}>Price: ${productData.price}</Text>
 
-      {productData.countInStock > 0 ? (
-        <View style={styles.dropdownContainer}>
-          <TouchableOpacity
-            style={styles.dropdownButton}
-            onPress={() => setShowDropdown(!showDropdown)}
-          >
-            <Text style={styles.dropdownText}>Qty: {selectedQuantity}</Text>
-          </TouchableOpacity>
-          {showDropdown && (
-            <View style={styles.dropdownOptions}>
-              {[...Array(maxQuantityOptions)].map((_, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => handleQuantityChange(index + 1)}
-                >
-                  <Text style={styles.dropdownOption}>{index + 1}</Text>
-                </TouchableOpacity>
+        {productData.countInStock > 0 ? (
+          <View style={styles.dropdownContainer}>
+            <Picker
+              selectedValue={quantity}
+              onValueChange={(value) => setSelectedQuantity(value)}
+              style={styles.dropdownOption}
+            >
+              <Picker.Item label="Select Quantity" />
+              {[...Array(maxQuantityOptions).keys()].map((x) => (
+                <Picker.Item
+                  key={x + 1}
+                  label={(x + 1).toString()}
+                  value={x + 1}
+                />
               ))}
-            </View>
-          )}
-          <TouchableOpacity
-            style={styles.addToCartButton}
-            onPress={handleAddToCart}
+            </Picker>
+            <TouchableOpacity
+              style={styles.addToCartButton}
+              onPress={handleAddToCart}
+            >
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+              >
+                {notify && <Entypo name="check" size={20} color="white" />}
+                <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View
+            style={{
+              backgroundColor: "red",
+              marginBottom: 12,
+              padding: 10,
+              borderRadius: 10,
+            }}
           >
-            <Text style={styles.addToCartButtonText}>Add to Cart</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View
-          style={{
-            backgroundColor: "red",
-            marginTop: 70,
-            padding: 10,
-            borderRadius: 10,
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 30 }}>Not in Stock</Text>
-        </View>
-      )}
+            <Text style={{ color: "white", fontSize: 30 }}>Not in Stock</Text>
+          </View>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
-
-export default ProductScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -97,23 +103,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    marginTop: 70,
+  },
+  contentContainer: {
+    alignItems: "center",
   },
   heading: {
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 10,
+    marginTop: 30,
   },
   image: {
     width: 300,
     height: 300,
-    marginBottom: 10,
     borderRadius: 50,
   },
   description: {
     fontSize: 16,
-    textAlign: "center",
+    textAlign: "left",
     marginBottom: 10,
   },
   price: {
@@ -140,15 +148,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   dropdownOption: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderWidth: 1,
-    fontSize: 16,
-    marginRight: 10,
+    width: 100,
   },
   addToCartButton: {
     marginTop: 20,
-    marginBottom: 80,
     backgroundColor: "black",
     padding: 15,
     borderRadius: 8,
@@ -161,3 +164,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
+export default ProductScreen;

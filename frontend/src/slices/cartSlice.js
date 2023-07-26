@@ -8,7 +8,7 @@ const initialState = {
   paymentMethod: "Paypal",
 };
 
-const loadInitialState = createAsyncThunk("cart/loadInitialState", async () => {
+export const loadInitialState = createAsyncThunk("cart/loadInitialState", async () => {
   try {
     const data = await AsyncStorage.getItem("CART_STORAGE_KEY");
     return data ? JSON.parse(data) : initialState;
@@ -35,7 +35,7 @@ const cartSlice = createSlice({
 
       if (existItem) {
         state.cartItems = state.cartItems.map((x) =>
-          x.product === existItem.product ? item : x
+          x.product === item.product ? item : x
         );
       } else {
         state.cartItems = [...state.cartItems, item];
@@ -62,8 +62,6 @@ const cartSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(loadInitialState.fulfilled, (state, action) => {
-      // Handle the fulfilled state of loadInitialState action
-      // Update the state with the data returned from the async action
       const loadedState = action.payload;
       state.cartItems = loadedState.cartItems;
       state.shippingAddress = loadedState.shippingAddress;
@@ -75,8 +73,6 @@ const cartSlice = createSlice({
     });
 
     builder.addCase(updateCartAsync.fulfilled, (state, action) => {
-      // This extra reducer handles the fulfilled (success) state of the updateCartAsync action
-      // Update the state with the data returned from the async action
       const updatedState = action.payload;
       state.cartItems = updatedState.cartItems;
       state.shippingAddress = updatedState.shippingAddress;
