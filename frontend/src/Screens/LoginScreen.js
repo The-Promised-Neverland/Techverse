@@ -1,12 +1,11 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ImageBackground,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Loader from "../components/Loader";
@@ -18,35 +17,31 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [message, setMessage] = useState(null);
 
   const login = async () => {
     setModalVisible(true);
     try {
-      const Remail = await AsyncStorage.getItem('email');
-      const Rpassword = await AsyncStorage.getItem('password');
-      if(email === Remail && password === Rpassword){
-        console.log('password matched');
-        setTimeout(()=>{
-          navigation.navigate('HomeScreen');
-        },3000)
-      }
-      else{
-        setModalVisible(false);
-        console.log('error in matching...type again')
+      const Remail = await AsyncStorage.getItem("email");
+      const Rpassword = await AsyncStorage.getItem("password");
+      if (email === Remail && password === Rpassword) {
+        setTimeout(() => {
+          navigation.navigate("HomeScreen");
+        }, 3000);
+      } else {
+        setMessage("Wrong email or password");
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
       }
     } catch (error) {
       setModalVisible(false);
       console.log(error);
-    } 
-  }
+    }
+  };
 
   return (
-    <ImageBackground
-      source={require("../Images/login.jpg")}
-      style={styles.container}
-      resizeMode="cover"
-    >
+    <>
       <View style={styles.login}>
         <View style={styles.inputContainer}>
           <Icon name="envelope" style={styles.inputIcon} />
@@ -76,7 +71,7 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-
+      {message && <Text>{message}</Text>}
       <Text
         style={{
           fontSize: 20,
@@ -91,7 +86,7 @@ const LoginScreen = () => {
       </Text>
 
       <Loader modalVisible={modalVisible} />
-    </ImageBackground>
+    </>
   );
 };
 
