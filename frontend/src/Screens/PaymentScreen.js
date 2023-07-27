@@ -13,6 +13,7 @@ const PaymentScreen = () => {
   const navigation = useNavigation();
 
   const cart = useSelector((state) => state.cart);
+
   const { shippingAddress } = cart;
 
   useEffect(() => {

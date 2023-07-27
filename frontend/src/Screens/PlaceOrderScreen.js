@@ -1,20 +1,16 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
-import { Button } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import CheckoutSteps from "../components/CheckoutSteps";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import OrderCard from "../components/OrderCard";
 import OrderSummary from "../components/OrderSummary";
 
 const PlaceOrderScreen = () => {
   const navigation = useNavigation();
 
-  const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
 
-  console.log({itemsPrice: cart.itemsPrice, taxPrice: cart.taxPrice, totalPrice: cart.totalPrice, shippingPrice: cart.shippingPrice});
-  
   useEffect(() => {
     if (!cart.shippingAddress.address) {
       navigation.navigate("ShippingScreen");
@@ -22,8 +18,6 @@ const PlaceOrderScreen = () => {
       navigation.navigate("PaymentScreen");
     }
   }, [navigation, cart.paymentMethod, cart.shippingAddress.address]);
-
-  const placeOrderHandler = async () => {};
 
   return (
     <View style={styles.container}>
@@ -37,7 +31,7 @@ const PlaceOrderScreen = () => {
           showsVerticalScrollIndicator={false}
         />
       </View>
-      <OrderSummary cart={cart} onPressPlaceOrder={placeOrderHandler} />
+      <OrderSummary cart={cart} />
     </View>
   );
 };
@@ -45,14 +39,14 @@ const PlaceOrderScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
   },
   flatListContainer: {
     flex: 1, // This will make the FlatList take the remaining available space above OrderSummary
+    marginBottom: 30,
   },
   placeOrderHeading: {
     fontSize: 24,
-    marginVertical: 40,
+    marginVertical: 20,
     fontWeight: "bold",
     textAlign: "center",
   },

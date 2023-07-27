@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import { addToCart , updateCartAsync} from "../slices/cartSlice";
+import { addToCart, updateCartAsync } from "../slices/cartSlice";
 import { Entypo } from "react-native-vector-icons";
 import { Picker } from "@react-native-picker/picker";
 

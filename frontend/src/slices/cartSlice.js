@@ -1,61 +1,63 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useSelector } from "react-redux";
 
 const initialState = {
   cartItems: [],
   shippingAddress: {},
   paymentMethod: "Paypal",
+  itemsPrice: 0.00,
+  shippingPrice: 0.00,
+  taxPrice: 0.00,
+  totalPrice: 0.00,
 };
 
 const addDecimals = (num) => {
   return (Math.round(num * 100) / 100).toFixed(2);
 };
 
-export const updateCartAsync = createAsyncThunk("cart/updateCart", async () => {
-  const state = useSelector((state) => state.cart);
-  try {
-    console.log("Aye boss..welcome to updateCart", {
-      CART: { ...state.cartItems },
-    });
+export const updateCartAsync = createAsyncThunk(
+  "cart/updateCart",
+  async (_, { getState }) => {
+    // getstate is passed by redux internally
+    const state = getState().cart;
+    try {
+      const itemsPrice = addDecimals(
+        state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
+      );
 
-    const itemsPrice = addDecimals(
-      state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
-    );
+      // Calculate shipping price (If order is above $100 then free, else $10 shipping fee)
+      const shippingPrice = addDecimals(itemsPrice > 100 ? 0 : 10);
 
-    // Calculate shipping price (If order is above $100 then free, else $10 shipping fee)
-    const shippingPrice = addDecimals(itemsPrice > 100 ? 0 : 10);
+      // Calculate tax price
+      const taxPrice = addDecimals(Number((0.15 * itemsPrice).toFixed(2)));
 
-    // Calculate tax price
-    const taxPrice = addDecimals(Number((0.15 * itemsPrice).toFixed(2)));
+      // Calculate total price
+      const totalPrice = (
+        Number(itemsPrice) +
+        Number(shippingPrice) +
+        Number(taxPrice)
+      ).toFixed(2);
 
-    // Calculate total price
-    const totalPrice = (
-      Number(itemsPrice) +
-      Number(shippingPrice) +
-      Number(taxPrice)
-    ).toFixed(2);
+      // Create a new object with the updated state
+      const updatedState = {
+        ...state,
+        itemsPrice,
+        shippingPrice,
+        taxPrice,
+        totalPrice,
+      };
 
-    // Create a new object with the updated state
-    const updatedState = {
-      ...state,
-      itemsPrice,
-      shippingPrice,
-      taxPrice,
-      totalPrice,
-    };
-
-    console.log("Storing in localStorage", { STORAGE: { ...updatedState } });
-    await AsyncStorage.setItem(
-      "CART_STORAGE_KEY",
-      JSON.stringify(updatedState)
-    );
-    return updatedState;
-  } catch (error) {
-    console.error("Error saving cart state to AsyncStorage:", error);
-    throw new Error("Failed to update cart.");
+      await AsyncStorage.setItem(
+        "CART_STORAGE_KEY",
+        JSON.stringify(updatedState)
+      );
+      return updatedState;
+    } catch (error) {
+      console.error("Error saving cart state to AsyncStorage:", error);
+      throw new Error("Failed to update cart.");
+    }
   }
-});
+);
 
 export const loadInitialState = createAsyncThunk(
   "cart/loadInitialState",
@@ -83,40 +85,33 @@ const cartSlice = createSlice({
           x.product === item.product ? item : x
         );
       } else {
-        state.cartItems = [...state.cartItems, item];
+        state.cartItems.push(item);
       }
-      return state;
     },
 
     removeFromCart: (state, action) => {
       state.cartItems = state.cartItems.filter(
         (x) => x.product !== action.payload
       );
-      return state;
     },
 
     saveShippingAddress: (state, action) => {
       state.shippingAddress = action.payload;
-      return state;
     },
 
     savePaymentMethod: (state, action) => {
       state.paymentMethod = action.payload;
-      return state;
     },
 
     clearCartItems: (state, action) => {
       state.cartItems = [];
-      return state;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(loadInitialState.fulfilled, (state, action) => {
-      return action.payload;
+      return action.payload; // currentState = updatedState
     });
     builder.addCase(updateCartAsync.fulfilled, (state, action) => {
-      console.log({ cartASYNC: action.payload });
-      console.log({ newState: { ...action.payload } });
       return action.payload;
     });
     builder.addCase(updateCartAsync.rejected, (state, action) => {
