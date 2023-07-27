@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useDispatch } from "react-redux";
-import { addToCart, updateCartAsync } from "../slices/cartSlice";
+import { addToCart , updateCartAsync} from "../slices/cartSlice";
 import { Entypo } from "react-native-vector-icons";
 import { Picker } from "@react-native-picker/picker";
 
@@ -18,12 +18,13 @@ const ProductScreen = ({ route }) => {
 
   const dispatch = useDispatch();
 
+
   const [quantity, setSelectedQuantity] = useState(1);
   const [notify, setNotify] = useState(null);
 
   const maxQuantityOptions = Math.min(3, productData.countInStock);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     // Dispatch the addToCart action with the selected productData and quantity
     const cartSchema = {
       product: productData._id, // id of the product

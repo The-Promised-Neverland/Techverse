@@ -1,110 +1,131 @@
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, StyleSheet } from "react-native";
+import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
-import Loader from "../components/Loader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [message, setMessage] = useState(null);
+
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const login = async () => {
-    setModalVisible(true);
+    setLoading(true);
     try {
-      const Remail = await AsyncStorage.getItem("email");
-      const Rpassword = await AsyncStorage.getItem("password");
-      if (email === Remail && password === Rpassword) {
+      const storedEmail = await AsyncStorage.getItem("email");
+      const storedPassword = await AsyncStorage.getItem("password");
+      if (email === storedEmail && password === storedPassword) {
         setTimeout(() => {
+          setLoading(false); // Stop the loading state
           navigation.navigate("HomeScreen");
         }, 3000);
       } else {
-        setMessage("Wrong email or password");
         setTimeout(() => {
-          setMessage(null);
+          setLoading(false); // Stop the loading state
+          setError("Wrong email or password");
         }, 3000);
       }
     } catch (error) {
-      setModalVisible(false);
-      console.log(error);
+      setTimeout(() => {
+        setLoading(false); // Stop the loading state
+        setError("Retry after sometime");
+      }, 3000);
     }
   };
 
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        setError(null);
+      }, 5000);
+    }
+  }, [error]);
+
   return (
-    <>
-      <View style={styles.login}>
-        <View style={styles.inputContainer}>
-          <Icon name="envelope" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Email"
-            placeholderTextColor="black"
-          />
-        </View>
+    <KeyboardAwareScrollView>
+      <View style={styles.container}>
+        <Text style={styles.title}>Login</Text>
+        <View style={styles.login}>
+          <View style={styles.inputContainer}>
+            <Icon name="envelope" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Email"
+              placeholderTextColor="black"
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Icon name="lock" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            placeholderTextColor="black"
-          />
-        </View>
-
-        <View style={styles.loginButtonContainer}>
-          <TouchableOpacity style={styles.loginButton} onPress={login}>
-            <Text style={styles.loginButtonText}>Login</Text>
-          </TouchableOpacity>
+          <View style={styles.inputContainer}>
+            <Icon name="lock" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              placeholderTextColor="black"
+            />
+          </View>
+          {error && (
+            <Text
+              style={{
+                alignSelf: "center",
+                marginVertical: 20,
+                fontWeight: "bold",
+                color: "red",
+                fontSize: 15,
+              }}
+            >
+              {error}
+            </Text>
+          )}
+          <Button
+            mode="contained"
+            onPress={() => login()}
+            buttonColor="black"
+            loading={loading}
+            style={styles.loginButton}
+          >
+            LOGIN
+          </Button>
+          <Text
+            style={{
+              fontSize: 20,
+              marginTop: "12%",
+              color: "black",
+              fontWeight: "600",
+              textDecorationLine: "underline",
+              alignSelf: "center",
+            }}
+            onPress={() => navigation.navigate("RegisterScreen")}
+          >
+            Create New Account
+          </Text>
         </View>
       </View>
-      {message && <Text>{message}</Text>}
-      <Text
-        style={{
-          fontSize: 20,
-          marginTop: "12%",
-          color: "white",
-          fontWeight: "600",
-          textDecorationLine: "underline",
-        }}
-        onPress={() => navigation.navigate("RegisterScreen")}
-      >
-        Create New Account
-      </Text>
-
-      <Loader modalVisible={modalVisible} />
-    </>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "bold",
-    marginBottom: 30,
-    color: "#fff",
+    marginVertical: "30%",
   },
   login: {
-    marginTop: "65%",
-    width: "70%",
+    width: "80%",
   },
   inputContainer: {
     flexDirection: "row",
@@ -133,24 +154,11 @@ const styles = StyleSheet.create({
   passwordButtonText: {
     color: "#007AFF",
   },
-  loginButtonContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 15,
-  },
   loginButton: {
-    width: "50%",
+    width: "40%",
     backgroundColor: "black",
-    borderRadius: 15,
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    alignItems: "center",
-  },
-  loginButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
+    paddingVertical: 5,
+    alignSelf: "center",
   },
 });
 

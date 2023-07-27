@@ -1,17 +1,22 @@
 import React from "react";
+
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
+
+import Header from "./components/Header";
+
 import HomeScreen from "./Screens/HomeScreen";
 import LoginScreen from "./Screens/LoginScreen";
 import SplashScreen from "./Screens/SplashScreen";
 import RegisterScreen from "./Screens/RegisterScreen";
-import Header from "./components/Header";
 import ProductScreen from "./Screens/ProductScreen";
 import CartScreen from "./Screens/CartScreen";
-import store from "./store";
-import { Provider } from "react-redux";
 import ShippingScreen from "./Screens/ShippingScreen";
 import PaymentScreen from "./Screens/PaymentScreen";
+import PlaceOrderScreen from "./Screens/PlaceOrderScreen";
+
+import store from "./store";
+import { Provider } from "react-redux";
 
 import { PaperProvider } from "react-native-paper";
 
@@ -62,6 +67,11 @@ const AppNavigator = () => {
               options={{ header: () => <Header /> }}
               name="PaymentScreen"
               component={PaymentScreen}
+            />
+            <Stack.Screen
+              options={{ header: () => <Header /> }}
+              name="PlaceOrderScreen"
+              component={PlaceOrderScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>

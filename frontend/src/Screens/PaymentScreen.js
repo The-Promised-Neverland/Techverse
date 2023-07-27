@@ -24,7 +24,7 @@ const PaymentScreen = () => {
   const submitHandler = () => {
     dispatch(savePaymentMethod(paymentMethod));
     navigation.navigate("PlaceOrderScreen");
-  };
+  }; 
 
   return (
     <View style={styles.container}>

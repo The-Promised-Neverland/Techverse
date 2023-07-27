@@ -1,48 +1,47 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet
-} from "react-native";
+import { View, Text, TextInput, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Button } from "react-native-paper";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { FontAwesome5 } from "react-native-vector-icons";
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [phone, setPhone] = useState(null);
+  const [password, setPassword] = useState(null);
 
   // State variables for input field errors
-  const [nameError, setNameError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [phoneError, setPhoneError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [nameError, setNameError] = useState(null);
+  const [emailError, setEmailError] = useState(null);
+  const [phoneError, setPhoneError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
 
-  const saveData = async () => {
-    setNameError("");
-    setEmailError("");
-    setPhoneError("");
-    setPasswordError("");
+  const [loading, setLoading] = useState(false);
+
+  const register = async () => {
+    setNameError(null);
+    setEmailError(null);
+    setPhoneError(null);
+    setPasswordError(null);
 
     if (!name) {
-      setNameError("Please fill.");
+      setNameError(true);
     }
 
     if (!email) {
-      setEmailError("Please fill.");
+      setEmailError(true);
     }
 
     if (!phone) {
-      setPhoneError("Please fill.");
+      setPhoneError(true);
     }
 
     if (!password) {
-      setPasswordError("Please fill.");
+      setPasswordError(true);
     }
 
     // If any of the fields are empty, stop the function here
@@ -50,109 +49,139 @@ const RegisterScreen = () => {
       return;
     }
 
-    await AsyncStorage.setItem("name", name);
-    await AsyncStorage.setItem("password", password);
-    await AsyncStorage.setItem("phone", phone);
-    await AsyncStorage.setItem("email", email);
-    navigation.goBack();
+    setLoading(true);
+    try {
+      await AsyncStorage.setItem("name", name);
+      await AsyncStorage.setItem("password", password);
+      await AsyncStorage.setItem("phone", phone);
+      await AsyncStorage.setItem("email", email);
+
+      setTimeout(() => {
+        navigation.navigate("HomeScreen");
+      }, 3000);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <>
-      <View style={styles.register}>
-        <View style={styles.inputContainer}>
-          <Icon name="user" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Name"
-            placeholderTextColor="black"
-          />
-          {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
+    <KeyboardAwareScrollView>
+      <View style={styles.container}>
+        <Text style={styles.title}>Register</Text>
+        <View style={styles.register}>
+          <View style={styles.inputContainer}>
+            <Icon name="user" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={(newText) => {
+                setName(newText);
+                setNameError(null);
+              }}
+              placeholder="Name"
+              placeholderTextColor="black"
+            />
+            {nameError && (
+              <FontAwesome5 name="hand-point-left" style={styles.errorIcon} />
+            )}
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Icon name="lock" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={(newText) => {
+                setPassword(newText);
+                setPasswordError(null);
+              }}
+              placeholder="Password"
+              placeholderTextColor="black"
+              secureTextEntry={true}
+            />
+            {passwordError && (
+              <FontAwesome5 name="hand-point-left" style={styles.errorIcon} />
+            )}
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Icon name="phone" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={phone}
+              onChangeText={(newText) => {
+                setPhone(newText);
+                setPhoneError(null);
+              }}
+              placeholder="Phone Number"
+              placeholderTextColor="black"
+            />
+            {phoneError && (
+              <FontAwesome5 name="hand-point-left" style={styles.errorIcon} />
+            )}
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Icon name="envelope" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={(newText) => {
+                setEmail(newText);
+                setEmailError(null);
+              }}
+              placeholder="Email"
+              placeholderTextColor="black"
+            />
+            {emailError && (
+              <FontAwesome5 name="hand-point-left" style={styles.errorIcon} />
+            )}
+          </View>
+
+          <Button
+            mode="contained"
+            onPress={() => register()}
+            buttonColor="black"
+            loading={loading}
+            style={styles.registerButton}
+          >
+            REGISTER
+          </Button>
         </View>
 
-        <View style={styles.inputContainer}>
-          <Icon name="lock" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            placeholderTextColor="black"
-            secureTextEntry={true}
-          />
-          {passwordError ? (
-            <Text style={styles.errorText}>{passwordError}</Text>
-          ) : null}
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Icon name="phone" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="Phone Number"
-            placeholderTextColor="black"
-          />
-          {phoneError ? (
-            <Text style={styles.errorText}>{phoneError}</Text>
-          ) : null}
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Icon name="envelope" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Email"
-            placeholderTextColor="black"
-          />
-          {emailError ? (
-            <Text style={styles.errorText}>{emailError}</Text>
-          ) : null}
-        </View>
-
-        <View style={styles.registerButtonContainer}>
-          <TouchableOpacity style={styles.registerButton} onPress={saveData}>
-            <Text style={styles.registerButtonText}>Register</Text>
-          </TouchableOpacity>
-        </View>
+        <Text
+          style={{
+            fontSize: 20,
+            marginTop: "5%",
+            color: "black",
+            fontWeight: "600",
+            textDecorationLine: "underline",
+          }}
+          onPress={() => navigation.navigate("LoginScreen")}
+        >
+          Already have an Account?
+        </Text>
       </View>
-
-      <Text
-        style={{
-          fontSize: 20,
-          marginTop: "5%",
-          color: "white",
-          fontWeight: "600",
-          textDecorationLine: "underline",
-        }}
-        onPress={() => navigation.navigate("LoginScreen")}
-      >
-        Already have an Account?
-      </Text>
-    </>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "bold",
-    marginBottom: 30,
-    color: "#fff",
+    marginVertical: "30%",
   },
   register: {
-    marginTop: "60%",
-    width: "70%",
+    width: "80%",
+  },
+  errorIcon: {
+    fontSize: 25,
+    color: "red",
   },
   inputContainer: {
     flexDirection: "row",
@@ -181,29 +210,11 @@ const styles = StyleSheet.create({
   passwordButtonText: {
     color: "#007AFF",
   },
-  registerButtonContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 15,
-  },
   registerButton: {
-    width: "50%",
+    width: "40%",
     backgroundColor: "black",
-    borderRadius: 15,
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    alignItems: "center",
-  },
-  registerButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 13,
-    marginTop: 1,
+    paddingVertical: 5,
+    alignSelf: "center",
   },
 });
 

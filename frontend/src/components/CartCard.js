@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import {
   addToCart,
   removeFromCart,
-  updateCartAsync,
+  updateCartAsync
 } from "../slices/cartSlice";
 import { Entypo } from "react-native-vector-icons";
 import { Picker } from "@react-native-picker/picker";
