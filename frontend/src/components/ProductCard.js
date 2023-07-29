@@ -10,13 +10,15 @@ const ProductCard = ({ product }) => {
     navigation.navigate("ProductScreen", { productData: product }); 
   }
 
+  console.log(product.image);
+  const imageURL = require(product.image);
   return (
     <TouchableOpacity
       style={styles.container}
       onPress={pressHandler}
     >
       <View style={styles.imageContainer}>
-        <Image source={product.image} style={styles.image} />
+        <Image source={imageURL} style={styles.image} />
       </View>
       <View style={styles.contentContainer}>
         <Text style={styles.name}>{product.name}</Text>

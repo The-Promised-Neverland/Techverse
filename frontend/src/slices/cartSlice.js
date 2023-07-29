@@ -5,10 +5,10 @@ const initialState = {
   cartItems: [],
   shippingAddress: {},
   paymentMethod: "Paypal",
-  itemsPrice: 0.00,
-  shippingPrice: 0.00,
-  taxPrice: 0.00,
-  totalPrice: 0.00,
+  itemsPrice: 0.0,
+  shippingPrice: 0.0,
+  taxPrice: 0.0,
+  totalPrice: 0.0,
 };
 
 const addDecimals = (num) => {

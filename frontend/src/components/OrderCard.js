@@ -5,10 +5,12 @@ const OrderCard = ({ item }) => {
   return (
     <View style={styles.orderItem}>
       <Image source={item.image} style={styles.image} />
-      <Text style={styles.itemName}>{item.name}</Text>
-      <Text style={styles.priceText}>
-        ${item.price} x {item.qty}
-      </Text>
+      <View style={styles.itemDetails}>
+        <Text style={styles.itemName}>{item.name}</Text>
+        <Text style={styles.priceText}>
+          ${item.price} x {item.qty}
+        </Text>
+      </View>
       <Text style={styles.boldText}>${item.price * item.qty}</Text>
     </View>
   );
@@ -18,16 +20,17 @@ const styles = StyleSheet.create({
   orderItem: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around", 
-    marginBottom: 10,
+    justifyContent: "space-between", // Changed from "space-around" to "space-between"
+    marginBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
-    paddingBottom: 10, 
+    paddingBottom: 10,
+    paddingHorizontal: 20
   },
   image: {
-    width: 100,
-    height: 100, 
-    borderRadius: 20
+    width: 50,
+    height: 50,
+    borderRadius: 10,
   },
   itemDetails: {
     flex: 1,
@@ -47,4 +50,3 @@ const styles = StyleSheet.create({
 });
 
 export default OrderCard;
-

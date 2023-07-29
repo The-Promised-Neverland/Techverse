@@ -4,12 +4,12 @@ import { useDispatch } from "react-redux";
 import {
   addToCart,
   removeFromCart,
-  updateCartAsync
+  updateCartAsync,
 } from "../slices/cartSlice";
 import { Entypo } from "react-native-vector-icons";
 import { Picker } from "@react-native-picker/picker";
 
-const CardCard = ({ item }) => {
+const CartCard = ({ item }) => {
   const dispatch = useDispatch();
 
   const handleRemoveFromCart = (id) => {
@@ -26,8 +26,6 @@ const CardCard = ({ item }) => {
       countInStock: productData.countInStock,
       qty: quantity,
     };
-    dispatch(removeFromCart(productData.product));
-    dispatch(updateCartAsync());
     dispatch(addToCart(cartSchema));
     dispatch(updateCartAsync());
   };
@@ -48,7 +46,7 @@ const CardCard = ({ item }) => {
         }}
         style={styles.dropdownOption}
       >
-        <Picker.Item label="Select Quantity" />
+        <Picker.Item label="Select Quantity" enabled={false} />
         {[...Array(5).keys()].map((x) => (
           <Picker.Item key={x + 1} label={(x + 1).toString()} value={x + 1} />
         ))}
@@ -57,23 +55,23 @@ const CardCard = ({ item }) => {
         onPress={() => handleRemoveFromCart(item.product)}
         style={styles.removeButton}
       >
-        <Entypo name="trash" size={30} color="red" />
+        <Entypo name="trash" size={20} color="red" />
       </TouchableOpacity>
     </View>
   );
 };
 
-export default CardCard;
+export default CartCard;
 
 const styles = StyleSheet.create({
   cartItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 30,
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
     borderRadius: 8,
     marginRight: 10,
   },

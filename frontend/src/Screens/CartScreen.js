@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import CardCard from "../components/CartCard";
+import CartCard from "../components/CartCard";
 import { useSelector } from "react-redux";
 import CartTotalDisplay from "../components/CartTotalDisplay";
 
@@ -33,7 +33,7 @@ const CartScreen = () => {
         <FlatList
           data={cartItems}
           keyExtractor={(item) => item.product}
-          renderItem={({ item }) => <CardCard item={item} />} // renders each card
+          renderItem={({ item }) => <CartCard item={item} />} // renders each card
           ListFooterComponent={
             <View>
               <CartTotalDisplay cartItems={cartItems} />

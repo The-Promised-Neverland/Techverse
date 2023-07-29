@@ -20,6 +20,7 @@ import { Provider } from "react-redux";
 
 import { PaperProvider } from "react-native-paper";
 import OrderDetailScreen from "./Screens/OrderDetailScreen";
+import ProfileScreen from "./Screens/ProfileScreen";
 
 const Stack = createStackNavigator();
 
@@ -78,6 +79,11 @@ const AppNavigator = () => {
               options={{ header: () => <Header /> }}
               name="OrderDetailScreen"
               component={OrderDetailScreen}
+            />
+            <Stack.Screen
+              options={{ headerShown: false }}
+              name="ProfileScreen"
+              component={ProfileScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>

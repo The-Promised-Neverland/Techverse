@@ -17,12 +17,12 @@ const ShippingScreen = () => {
   const cart = useSelector((state) => state.cart);
   const { shippingAddress } = cart;
 
-  const [address, setAddress] = useState(shippingAddress?.address || null);
-  const [city, setCity] = useState(shippingAddress?.city || null);
+  const [address, setAddress] = useState(shippingAddress?.address || "");
+  const [city, setCity] = useState(shippingAddress?.city || "");
   const [postalCode, setPostalCode] = useState(
-    shippingAddress?.postalCode || null
+    shippingAddress?.postalCode || ""
   );
-  const [country, setCountry] = useState(shippingAddress?.country || null);
+  const [country, setCountry] = useState(shippingAddress?.country || "");
 
   const [errorAddress, setErrorAddress] = useState(null);
   const [errorCity, setErrorCity] = useState(null);
@@ -35,19 +35,19 @@ const ShippingScreen = () => {
   const submitHandler = () => {
     let flag = true;
 
-    if (address === null) {
+    if (address === "") {
       setErrorAddress(true);
       flag = false;
     }
-    if (city === null) {
+    if (city === "") {
       setErrorCity(true);
       flag = false;
     }
-    if (postalCode === null) {
+    if (postalCode === "") {
       setErrorPostalCode(true);
       flag = false;
     }
-    if (country === null) {
+    if (country === "") {
       setErrorCountry(true);
       flag = false;
     }

@@ -1,27 +1,45 @@
-import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import React from "react";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons"; // Import Expo vector icons
+import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import brandImage from "../../../assets/favicon.png";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Avatar, Badge } from "react-native-paper";
+import { useSelector } from "react-redux";
 
 const Header = () => {
   const navigation = useNavigation();
+
+  const loggedIn = true;
+
+  const itemCount = useSelector((state) => state.cart.cartItems).length;
+
   return (
     <SafeAreaView style={styles.header}>
-      <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+      <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
         <Image source={brandImage} style={styles.brandImage} />
       </TouchableOpacity>
 
       <View style={styles.iconsContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
-          <View style={styles.iconBackground}>
-            <FontAwesome name="user" size={24} color="black" />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('CartScreen')}>
+        {loggedIn === true ? (
+          <TouchableOpacity onPress={()=>navigation.navigate("ProfileScreen")}>
+            <Avatar.Image
+              size={50}
+              source={require("../../../assets/Avatar.jpg")}
+            />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
+            <View style={styles.iconBackground}>
+              <FontAwesome name="user" size={24} color="black" />
+            </View>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity onPress={() => navigation.navigate("CartScreen")}>
           <View style={styles.iconBackground}>
             <FontAwesome5 name="shopping-cart" size={24} color="black" />
+            {itemCount > 0 && <Badge style={styles.badge}>{itemCount}</Badge>}
           </View>
         </TouchableOpacity>
       </View>
@@ -31,27 +49,31 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: "row", // Arrange content horizontally
-    justifyContent: "space-between", // Distribute content evenly along the row
-    alignItems: "center", // Center content vertically
-    paddingHorizontal: 15, // Add some horizontal padding for spacing
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 15,
   },
   brandImage: {
     borderRadius: 100,
-    width: 40, // Set the width and height according to your brand favicon size
+    width: 40,
     height: 40,
   },
   iconsContainer: {
-    flexDirection: "row", // Arrange icons horizontally
-    alignItems: "center", // Center icons vertically
+    flexDirection: "row",
+    alignItems: "center",
   },
   iconBackground: {
-    borderRadius: 100,
-    padding: 5, // Add some padding to create a gap between the icons
-    marginHorizontal: 5, // Add some horizontal margin to create space between the icons
+    position: "relative", // Use position relative for badge positioning
+    padding: 5,
+    marginHorizontal: 5,
   },
-  boldIcon: {
-    fontWeight: "bold", // Make the icons bold
+  badge: {
+    position: "absolute", // Position the badge at the top right corner
+    top: -5,
+    right: -5,
+    backgroundColor: "green", // Customize the badge background color
+    fontWeight: "bold",
   },
 });
 
