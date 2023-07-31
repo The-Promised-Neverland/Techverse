@@ -1,6 +1,6 @@
-import { USERS_URL } from "../Endpoints";
+import { IMG_UPLOAD_USER, USERS_URL } from "../Endpoints";
 import { apiSlice } from "./apiSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setUserInfo } from "./userStore";
 
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,10 +10,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      onQueryStarted: async (_, { queryFulfilled }) => {
+      onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
         try {
           const { data } = await queryFulfilled;
-          await AsyncStorage.setItem("userInfo", JSON.stringify(data));
+          dispatch(setUserInfo(data));
         } catch (error) {
           console.error("Failed to set userInfo", error);
         }
@@ -28,23 +28,9 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       onQueryStarted: async (_, { queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
-          await AsyncStorage.setItem("userInfo", JSON.stringify(data));
+          dispatch(setUserInfo(data));
         } catch (error) {
           console.error("Failed to set userInfo", error);
-        }
-      },
-    }),
-    logout: builder.mutation({
-      query: () => ({
-        url: `${USERS_URL}/logout`,
-        method: "POST",
-      }),
-      onQueryStarted: async (_, { queryFulfilled }) => {
-        try {
-          await queryFulfilled;
-          await AsyncStorage.removeItem("userInfo");
-        } catch (error) {
-          console.error("Failed to erase userInfo", error);
         }
       },
     }),
@@ -60,13 +46,20 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         url: `${USERS_URL}`,
       }),
     }),
+    uploadUserImage: builder.mutation({
+      query: ({userID, image}) => ({
+        url: `${IMG_UPLOAD_USER}`,
+        method: "POST",
+        body: {userID, image},
+      }),
+    }),
   }),
 });
 
 export const {
   useLoginMutation,
   useRegisterMutation,
-  useLogoutMutation,
   useProfileMutation,
   useGetUsersQuery,
+  useUploadUserImageMutation
 } = usersApiSlice;

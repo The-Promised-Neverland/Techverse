@@ -1,14 +1,23 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Pressable,
+  Image,
+} from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Button } from "react-native-paper";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { FontAwesome5 } from "react-native-vector-icons";
+import UploadModal from "../components/UploadModal";
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
+
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
   const [phone, setPhone] = useState(null);
@@ -21,6 +30,11 @@ const RegisterScreen = () => {
   const [passwordError, setPasswordError] = useState(null);
 
   const [loading, setLoading] = useState(false);
+
+  const [profileImage, setProfileImage] = useState(
+    require("../../../assets/Avatar.jpg")
+  );
+  const [modalVisible, setModalVisible] = useState(false);
 
   const register = async () => {
     setNameError(null);
@@ -66,9 +80,17 @@ const RegisterScreen = () => {
 
   return (
     <KeyboardAwareScrollView>
+      <UploadModal
+        setProfileImage={setProfileImage}
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
       <View style={styles.container}>
         <Text style={styles.title}>Register</Text>
         <View style={styles.register}>
+          <Pressable onPress={() => setModalVisible(true)}>
+            <Image style={styles.profileImage} source={profileImage} />
+          </Pressable>
           <View style={styles.inputContainer}>
             <Icon name="user" style={styles.inputIcon} />
             <TextInput
@@ -174,7 +196,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: "bold",
-    marginVertical: "30%",
+    marginVertical: "10%",
   },
   register: {
     width: "80%",
@@ -182,6 +204,13 @@ const styles = StyleSheet.create({
   errorIcon: {
     fontSize: 25,
     color: "red",
+  },
+  profileImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    marginBottom: 20,
+    alignSelf: "center",
   },
   inputContainer: {
     flexDirection: "row",

@@ -1,12 +1,15 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import { useNavigation, StackActions } from "@react-navigation/native";
+import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useLoginMutation } from "../slices/userSlice";
 
 const LoginScreen = () => {
+  const [login, { isLoading: LoginLoading, error: LoginError }] =
+    useLoginMutation();
+
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
@@ -15,37 +18,24 @@ const LoginScreen = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const login = async () => {
+  const loginHandler = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const storedEmail = await AsyncStorage.getItem("email");
-      const storedPassword = await AsyncStorage.getItem("password");
-      if (email === storedEmail && password === storedPassword) {
-        setTimeout(() => {
-          setLoading(false); // Stop the loading state
-          navigation.navigate("HomeScreen");
-        }, 3000);
-      } else {
-        setTimeout(() => {
-          setLoading(false); // Stop the loading state
-          setError("Wrong email or password");
-        }, 3000);
-      }
+      await login({ email, password }).unwrap();
+      setLoading(false);
+      setEmail("");
+      setPassword("");
+      navigation.dispatch(StackActions.replace('HomeScreen')); // doing this will make this login screen not appear from homescreen on click of back button
     } catch (error) {
-      setTimeout(() => {
-        setLoading(false); // Stop the loading state
-        setError("Retry after sometime");
-      }, 3000);
-    }
-  };
-
-  useEffect(() => {
-    if (error) {
+      setLoading(false);
+      setError(error.data.message ? error.data.message : "Server Error");
       setTimeout(() => {
         setError(null);
       }, 5000);
+      console.error(error?.data?.message || error.error);
     }
-  }, [error]);
+  };
 
   return (
     <KeyboardAwareScrollView>
@@ -88,7 +78,7 @@ const LoginScreen = () => {
           )}
           <Button
             mode="contained"
-            onPress={() => login()}
+            onPress={loginHandler}
             buttonColor="black"
             loading={loading}
             style={styles.loginButton}

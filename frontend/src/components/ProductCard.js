@@ -10,15 +10,17 @@ const ProductCard = ({ product }) => {
     navigation.navigate("ProductScreen", { productData: product }); 
   }
 
-  console.log(product.image);
-  const imageURL = require(product.image);
+  const getImageURL = (uid) => {
+    return `https://res.cloudinary.com/decz8mn8c/image/upload/f_auto,q_auto/v1/Techverse/${uid}`;
+  }
+
   return (
     <TouchableOpacity
       style={styles.container}
       onPress={pressHandler}
     >
       <View style={styles.imageContainer}>
-        <Image source={imageURL} style={styles.image} />
+        <Image source={{ uri: getImageURL(product.image) }} alt={product.name} style={styles.image} />
       </View>
       <View style={styles.contentContainer}>
         <Text style={styles.name}>{product.name}</Text>

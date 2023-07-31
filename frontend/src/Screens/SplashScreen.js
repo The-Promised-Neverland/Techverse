@@ -11,8 +11,8 @@ const SplashScreen = () => {
   const spinAnim = new Animated.Value(0);
 
   const setup = async () => {
-    const email = await AsyncStorage.getItem("email");
-    if (email) {
+    const data = await AsyncStorage.getItem("userInfo");
+    if (data) {
       navigation.navigate("HomeScreen");
     } else {
       navigation.navigate("LoginScreen");

@@ -2,9 +2,18 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 
 const OrderCard = ({ item }) => {
+  
+  const getImageURL = (uid) => {
+    return `https://res.cloudinary.com/decz8mn8c/image/upload/f_auto,q_auto/v1/Techverse/${uid}`;
+  };
+
   return (
     <View style={styles.orderItem}>
-      <Image source={item.image} style={styles.image} />
+      <Image
+        source={{ uri: getImageURL(item.image) }}
+        alt={item.name}
+        style={styles.image}
+      />
       <View style={styles.itemDetails}>
         <Text style={styles.itemName}>{item.name}</Text>
         <Text style={styles.priceText}>
@@ -25,7 +34,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
     paddingBottom: 10,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   image: {
     width: 50,

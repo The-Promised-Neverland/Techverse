@@ -18,6 +18,9 @@ const ProductScreen = ({ route }) => {
 
   const dispatch = useDispatch();
 
+  const getImageURL = (uid) => {
+    return `https://res.cloudinary.com/decz8mn8c/image/upload/f_auto,q_auto/v1/Techverse/${uid}`;
+  }
 
   const [quantity, setSelectedQuantity] = useState(1);
   const [notify, setNotify] = useState(null);
@@ -48,7 +51,7 @@ const ProductScreen = ({ route }) => {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Image source={productData.image} style={styles.image} />
+        <Image source={{ uri: getImageURL(productData.image) }} alt={productData.name} style={styles.image} />
         <Text style={styles.heading}>{productData.name}</Text>
         <Text style={styles.description}>{productData.description}</Text>
         <Text style={styles.price}>Price: ${productData.price}</Text>

@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 const Header = () => {
   const navigation = useNavigation();
 
-  const loggedIn = true;
+  const userInfo = useSelector((state) => state.userLocal.userInfo);
 
   const itemCount = useSelector((state) => state.cart.cartItems).length;
 
@@ -21,12 +21,11 @@ const Header = () => {
       </TouchableOpacity>
 
       <View style={styles.iconsContainer}>
-        {loggedIn === true ? (
-          <TouchableOpacity onPress={()=>navigation.navigate("ProfileScreen")}>
-            <Avatar.Image
-              size={50}
-              source={require("../../../assets/Avatar.jpg")}
-            />
+        {userInfo ? (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ProfileScreen")}
+          >
+            <Avatar.Image size={50} source={{ uri: userInfo.profileImg }} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>

@@ -30,9 +30,17 @@ const CartCard = ({ item }) => {
     dispatch(updateCartAsync());
   };
 
+  const getImageURL = (uid) => {
+    return `https://res.cloudinary.com/decz8mn8c/image/upload/f_auto,q_auto/v1/Techverse/${uid}`;
+  };
+
   return (
     <View style={styles.cartItem}>
-      <Image source={item.image} style={styles.image} />
+      <Image
+        source={{ uri: getImageURL(item.image) }}
+        alt={item.name}
+        style={styles.image}
+      />
       <View style={styles.itemDetails}>
         <Text style={{ fontWeight: "bold", fontSize: 15 }}>{item.name}</Text>
         <View style={styles.priceQtyContainer}>
