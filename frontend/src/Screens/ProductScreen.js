@@ -50,6 +50,7 @@ const ProductScreen = ({ route }) => {
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
+        overScrollMode="never"
       >
         <Image source={{ uri: getImageURL(productData.image) }} alt={productData.name} style={styles.image} />
         <Text style={styles.heading}>{productData.name}</Text>
@@ -63,7 +64,7 @@ const ProductScreen = ({ route }) => {
               onValueChange={(value) => setSelectedQuantity(value)}
               style={styles.dropdownOption}
             >
-              <Picker.Item label="Select Quantity" />
+              <Picker.Item label="Select Quantity" enabled={false}/>
               {[...Array(maxQuantityOptions).keys()].map((x) => (
                 <Picker.Item
                   key={x + 1}

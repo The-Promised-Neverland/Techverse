@@ -1,6 +1,6 @@
 import express from "express";
 import {
-    addOrderItems,
+    createOrder,
     getOrderById,
     getOrders,
     updateOrderToDelivered,
@@ -15,7 +15,7 @@ const router = express.Router();
 
 // protect is token verification middleware and admin middleware is to check if the user is an Admin
 
-router.route('/').post(protect, addOrderItems).get(protect, admin, getOrders);
+router.route('/').post(protect, createOrder).get(protect, admin, getOrders);
 router.route('/myOrders').get(protect, getUserOrders);
 router.route('/:id').get(protect, getOrderById);
 router.route('/:id/pay').put(protect, updateOrderToPaid);

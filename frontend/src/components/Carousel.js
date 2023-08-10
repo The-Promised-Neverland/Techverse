@@ -35,13 +35,7 @@ const CarouselItem = ({ item, onPress }) => {
 };
 
 const CarouselView = () => {
-  const {
-    data: topProducts,
-    isLoading,
-    error,
-  } = useGetTopProductsQuery(null, {
-    pollingInterval: 60000,
-  });
+  const { data: topProducts, isLoading, error } = useGetTopProductsQuery();
 
   const navigation = useNavigation();
 

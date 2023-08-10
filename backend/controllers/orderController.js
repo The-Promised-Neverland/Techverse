@@ -4,7 +4,7 @@ import Order from "../models/orderModel.js";
 //@desc  Create new order
 //@route POST /api/orders
 //@access Private
-const addOrderItems = asyncHandler(async (req, res) => {
+const createOrder = async (req, res) => {
   const {
     orderItems,
     shippingAddress,
@@ -13,26 +13,36 @@ const addOrderItems = asyncHandler(async (req, res) => {
     shippingPrice,
     totalPrice,
     paymentMethod,
+    paymentDetails,
   } = req.body;
 
-  if (orderItems && orderItems.length === 0) {
-    res.status(400);
-    throw new Error("No orders items");
-  } else {
-    const order = new Order({
-      user: req.user._id,
-      orderItems,
-      shippingAddress,
-      paymentMethod,
-      taxPrice,
-      itemsPrice,
-      shippingPrice,
-      totalPrice,
-    });
-    const createdOrder = await order.save();
-    res.status(201).json(createdOrder);
+  let paymentResult;
+
+  if (paymentDetails) {
+    paymentResult = {
+      // from payment gateways like paypal etc
+      id: paymentDetails.id, // transaction id
+      status: paymentDetails.status, // payment status
+      email_address: paymentDetails.payer.email_address, // email address of payee
+    };
   }
-});
+
+  const order = new Order({
+    user: req.user._id,
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    taxPrice,
+    itemsPrice,
+    shippingPrice,
+    totalPrice,
+    isPaid: true,
+    paidAt: Date.now(),
+    paymentResult,
+  });
+  const createdOrder = await order.save();
+  res.status(201).json(createdOrder);
+};
 
 //@desc  Get order by id
 //@route GET /api/orders/:id
@@ -114,7 +124,7 @@ const getUserOrders = asyncHandler(async (req, res) => {
 });
 
 export {
-  addOrderItems,
+  createOrder,
   getOrderById,
   getOrders,
   updateOrderToDelivered,

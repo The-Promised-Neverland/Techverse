@@ -5,7 +5,7 @@ const orderSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: "User",
-    },
+    }, 
     orderItems: [
         {
             name: {
@@ -25,9 +25,8 @@ const orderSchema = mongoose.Schema({
                 required: true,
             },
             product: {
-                type: mongoose.Schema.Types.ObjectId,
+                type: String,
                 required: true,
-                ref: "Product",
             },
         },
     ],
@@ -44,7 +43,6 @@ const orderSchema = mongoose.Schema({
     paymentResult: {
         id: {type: String   },
         status:{ type: String},
-        update_time: {type: String},
         email_address: {type: String},
     },
     itemsPrice: {
@@ -59,7 +57,7 @@ const orderSchema = mongoose.Schema({
     },
     shippingPrice: {
         type: Number,
-        requoired: true,
+        required: true,
         default: 0.0,
     },
     totalPrice: {

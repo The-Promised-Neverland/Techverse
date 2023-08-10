@@ -3,7 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import colors from "colors";
-import productRoutes from "./routes/productRoutes.js"; 
+import productRoutes from "./routes/productRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import orderRoutes from "./routes/orderRoutes.js";
@@ -11,6 +11,8 @@ import Stripe from "stripe";
 import asyncHandler from "./middleware/asyncHandler.js";
 import Order from "./models/orderModel.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import { protect } from "./middleware/authMiddleware.js";
+import paypal from "paypal-rest-sdk";
 
 dotenv.config();
 
@@ -21,7 +23,7 @@ connectDB();
 const app = express();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
- 
+
 app.post(
   "/webhook",
   express.raw({ type: "application/json" }),
@@ -86,16 +88,81 @@ app.post(
 
 // Body parser Middleware
 app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true , limit: "50mb"}));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
+paypal.configure({
+  mode: "sandbox",
+  client_id:
+    "AcG1YHZprpNbn2rc6Q4ZF_0FhTfF4wqaGgONJOF9UQmgjV_a0PIsm6OGt7YdrD2mU8kjm16QxJ8lXv8k",
+  client_secret:
+    "EIrZ_MYyWMDthRgcpp4fQmf074uK49NLIU5ouRWFXtKezYN6w-XcnGMHWOOfZLGTNHfILv98FDr9JaNS",
+});
 
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/upload", uploadRoutes);
+app.use("/api/upload", protect, uploadRoutes);
 
-app.get("/api/config/paypal", (req, res) =>
-  res.send({ clientId: process.env.PAYPAL_CLIENT_ID })
-);
+const __dirname = path.resolve();
+
+
+app.post("/api/paypal", (req, res) => {
+  const { totalPrice } = req.body;
+  const create_payment_json = {
+    intent: "sale",
+    payer: {
+      payment_method: "paypal",
+    },
+    redirect_urls: {
+      return_url: "http://192.168.29.148:5000/success",
+      cancel_url: "http://192.168.29.148:5000/cancel",
+    },
+    transactions: [
+      {
+        amount: {
+          currency: "USD",
+          total: totalPrice,
+        },
+      },
+    ],
+  };
+
+  paypal.payment.create(create_payment_json, function (error, payment) {
+    if (error) {
+      res.status(401).send(error);
+      console.log(error);
+    } else {
+      res.send(payment.links[1].href);
+    }
+  });
+});
+
+
+app.get("/success", (req, res) => {
+  const payer_id = req.query.PayerID;
+  const paymentId = req.query.paymentId;
+
+  const execute_payment_json = {
+    payer_id,
+  };
+
+  paypal.payment.execute(
+    paymentId,
+    execute_payment_json,
+    function (error, payment) {
+      if (error) {
+        console.log(error.response);
+        throw error;
+      } else {
+        res.sendFile(path.join(__dirname, "/views/success.html"));
+      }
+    }
+  );
+});
+
+app.get("/cancel", (req, res) => {
+  res.send("cancel!");
+});
 
 app.post(
   "/api/create-checkout-session/stripe",
@@ -125,8 +192,6 @@ app.post(
     res.send({ url: session.url });
   })
 );
-
-const __dirname = path.resolve();
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "/frontend/build")));

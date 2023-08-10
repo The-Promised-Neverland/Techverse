@@ -3,8 +3,6 @@ import { StyleSheet, SafeAreaView, FlatList } from "react-native";
 import ProductCard from "../components/ProductCard";
 import CarouselView from "../components/Carousel";
 import { useGetProductsQuery } from "../slices/productSlice";
-import { Text } from "react-native";
-import { View } from "react-native";
 
 const HomeScreen = () => {
   const {
@@ -25,6 +23,8 @@ const HomeScreen = () => {
         contentContainerStyle={styles.productList}
         ListHeaderComponent={<CarouselView />} // this renders anything as the top of the list
         showsVerticalScrollIndicator={false}
+        overScrollMode="never"
+        initialNumToRender={10}
       />
     </SafeAreaView>
   );

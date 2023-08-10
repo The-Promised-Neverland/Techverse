@@ -62,7 +62,7 @@ const ShippingScreen = () => {
   };
 
   return (
-    <KeyboardAwareScrollView>
+    <KeyboardAwareScrollView overScrollMode="never">
       <View style={styles.container}>
         <CheckoutSteps step1 step2 />
         <Text style={styles.heading}>Shipping Screen</Text>

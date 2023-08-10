@@ -1,12 +1,16 @@
-import { useNavigation, StackActions } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useLoginMutation } from "../slices/userSlice";
+import { useRoute } from "@react-navigation/native";
 
 const LoginScreen = () => {
+  const route = useRoute();
+  const redirectScreen = route.params?.redirect;
+
   const [login, { isLoading: LoginLoading, error: LoginError }] =
     useLoginMutation();
 
@@ -26,7 +30,15 @@ const LoginScreen = () => {
       setLoading(false);
       setEmail("");
       setPassword("");
-      navigation.dispatch(StackActions.replace('HomeScreen')); // doing this will make this login screen not appear from homescreen on click of back button
+      if(redirectScreen){
+        navigation.replace(redirectScreen); // doing this will make this login screen not appear from homescreen on click of back button
+      }
+      else{
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "HomeScreen" }],
+        });
+      }
     } catch (error) {
       setLoading(false);
       setError(error.data.message ? error.data.message : "Server Error");
@@ -38,7 +50,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <KeyboardAwareScrollView>
+    <KeyboardAwareScrollView overScrollMode="never">
       <View style={styles.container}>
         <Text style={styles.title}>Login</Text>
         <View style={styles.login}>
@@ -94,7 +106,7 @@ const LoginScreen = () => {
               textDecorationLine: "underline",
               alignSelf: "center",
             }}
-            onPress={() => navigation.navigate("RegisterScreen")}
+            onPress={() => navigation.replace("RegisterScreen", {redirect: redirectScreen})}
           >
             Create New Account
           </Text>

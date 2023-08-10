@@ -13,6 +13,7 @@ const UploadModal = ({
   setModalVisible,
   userID,
   setUploading,
+  token
 }) => {
   const dispatch = useDispatch();
 
@@ -25,10 +26,11 @@ const UploadModal = ({
       const data = await uploadUserImage({
         userID,
         image,
+        token
       }).unwrap();
       dispatch(setUserInfo(data));
-      setUploading(false);
     } catch (error) {
+      setUploading(false);
       console.error("Backend request error:", error);
     }
   };

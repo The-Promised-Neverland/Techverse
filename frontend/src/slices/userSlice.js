@@ -1,6 +1,8 @@
+import { useDispatch } from "react-redux";
 import { IMG_UPLOAD_USER, USERS_URL } from "../Endpoints";
 import { apiSlice } from "./apiSlice";
 import { setUserInfo } from "./userStore";
+
 
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -25,7 +27,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      onQueryStarted: async (_, { queryFulfilled }) => {
+      onQueryStarted: async (_, { queryFulfilled, dispatch }) => {
         try {
           const { data } = await queryFulfilled;
           dispatch(setUserInfo(data));
@@ -47,10 +49,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     uploadUserImage: builder.mutation({
-      query: ({userID, image}) => ({
+      query: (data) => ({
         url: `${IMG_UPLOAD_USER}`,
         method: "POST",
-        body: {userID, image},
+        body: data,
       }),
     }),
   }),

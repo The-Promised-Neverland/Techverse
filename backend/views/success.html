@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Received</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .gif-container {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .gif {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain; /* Adjusted property */
+    }
+    .text-overlay {
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 90%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: black;
+      text-align: left;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="gif-container">
+    <img class="gif" src="https://res.cloudinary.com/decz8mn8c/image/upload/v1691519907/orderplaced_u7gz3d.gif" alt="Payment Received">
+    <div class="text-overlay">
+      Redirecting...
+    </div>
+  </div>
+</body>
+</html>

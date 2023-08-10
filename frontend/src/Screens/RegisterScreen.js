@@ -6,22 +6,32 @@ import {
   StyleSheet,
   Pressable,
   Image,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Button } from "react-native-paper";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { FontAwesome5 } from "react-native-vector-icons";
-import UploadModal from "../components/UploadModal";
+import { useRegisterMutation } from "../slices/userSlice";
+import {
+  handleCameraCapture,
+  handleMediaLibrarySelect,
+} from "../utils/CameraUtils";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const RegisterScreen = () => {
+  const route = useRoute();
+  const redirectScreen = route.params?.redirect;
+
   const navigation = useNavigation();
 
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
   const [phone, setPhone] = useState(null);
   const [password, setPassword] = useState(null);
+  const [profileImage, setProfileImage] = useState(
+    "https://res.cloudinary.com/decz8mn8c/image/upload/v1690702744/UserImages/Default_slwlfm.webp"
+  );
 
   // State variables for input field errors
   const [nameError, setNameError] = useState(null);
@@ -30,13 +40,11 @@ const RegisterScreen = () => {
   const [passwordError, setPasswordError] = useState(null);
 
   const [loading, setLoading] = useState(false);
-
-  const [profileImage, setProfileImage] = useState(
-    require("../../../assets/Avatar.jpg")
-  );
   const [modalVisible, setModalVisible] = useState(false);
 
-  const register = async () => {
+  const [register] = useRegisterMutation();
+
+  const registerHandler = async () => {
     setNameError(null);
     setEmailError(null);
     setPhoneError(null);
@@ -65,31 +73,47 @@ const RegisterScreen = () => {
 
     setLoading(true);
     try {
-      await AsyncStorage.setItem("name", name);
-      await AsyncStorage.setItem("password", password);
-      await AsyncStorage.setItem("phone", phone);
-      await AsyncStorage.setItem("email", email);
-
+      await register({ name, email, password, phone, profileImage });
       setTimeout(() => {
-        navigation.navigate("HomeScreen");
+        setLoading(false); // Set loading to false after the operation is done
+        if (redirectScreen) {
+          navigation.replace(redirectScreen);
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "HomeScreen" }],
+          });
+        }
       }, 3000);
     } catch (error) {
+      setLoading(false); // Set loading to false in case of an error
       console.error(error);
     }
   };
 
+  const openCamera = async () => {
+    setModalVisible(false);
+    const imageUrl = await handleCameraCapture();
+    if (imageUrl) {
+      setProfileImage(imageUrl); // Fix the function name to setProfileImage
+    }
+  };
+
+  const openMediaLibrary = async () => {
+    setModalVisible(false);
+    const imageUrl = await handleMediaLibrarySelect();
+    if (imageUrl) {
+      setProfileImage(imageUrl); // Fix the function name to setProfileImage
+    }
+  };
+
   return (
-    <KeyboardAwareScrollView>
-      <UploadModal
-        setProfileImage={setProfileImage}
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-      />
+    <KeyboardAwareScrollView overScrollMode="never">
       <View style={styles.container}>
         <Text style={styles.title}>Register</Text>
         <View style={styles.register}>
           <Pressable onPress={() => setModalVisible(true)}>
-            <Image style={styles.profileImage} source={profileImage} />
+            <Image style={styles.profileImage} source={{ uri: profileImage }} />
           </Pressable>
           <View style={styles.inputContainer}>
             <Icon name="user" style={styles.inputIcon} />
@@ -162,7 +186,7 @@ const RegisterScreen = () => {
 
           <Button
             mode="contained"
-            onPress={() => register()}
+            onPress={registerHandler}
             buttonColor="black"
             loading={loading}
             style={styles.registerButton}
@@ -179,19 +203,70 @@ const RegisterScreen = () => {
             fontWeight: "600",
             textDecorationLine: "underline",
           }}
-          onPress={() => navigation.navigate("LoginScreen")}
+          onPress={() =>
+            navigation.replace("LoginScreen", { redirect: redirectScreen })
+          }
         >
           Already have an Account?
         </Text>
       </View>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Pressable style={styles.modalOption} onPress={openCamera}>
+              <Text style={styles.modalOptionText}>Camera</Text>
+            </Pressable>
+            <Pressable style={styles.modalOption} onPress={openMediaLibrary}>
+              <Text style={styles.modalOptionText}>Device</Text>
+            </Pressable>
+            <Pressable
+              style={styles.modalOption}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalOptionText}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    maxHeight: "70%", // Adjust the maximum height of the modal content
+  },
+  modalOption: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+  },
+  modalOptionText: {
+    fontSize: 16,
+    color: "black",
+    textAlign: "center",
+    fontWeight: "600",
+  },
   container: {
     flex: 1,
     alignItems: "center",
+    marginTop: "15%",
   },
   title: {
     fontSize: 30,
@@ -233,17 +308,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 10,
   },
-  passwordButton: {
-    marginLeft: 10,
-  },
-  passwordButtonText: {
-    color: "#007AFF",
-  },
   registerButton: {
     width: "40%",
     backgroundColor: "black",
     paddingVertical: 5,
     alignSelf: "center",
+  },
+  scrollViewContent: {
+    flexGrow: 1,
   },
 });
 

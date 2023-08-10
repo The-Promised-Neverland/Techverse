@@ -1,6 +1,9 @@
 import React from "react";
 
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 
 import Header from "./components/Header";
@@ -19,17 +22,32 @@ import store from "./store";
 import { Provider } from "react-redux";
 
 import { PaperProvider } from "react-native-paper";
-import OrderDetailScreen from "./Screens/OrderDetailScreen";
 import ProfileScreen from "./Screens/ProfileScreen";
+import { useRef, useEffect } from "react";
+import OrderDetailScreen from "./Screens/OrderDetailScreen";
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
+  const navigationRef = useRef();
+
+  useEffect(() => {
+    navigationRef.current?.addListener("state", () => {
+      const navigationState = navigationRef.current?.getState();
+      const allScreens = navigationState?.routes.map((route) => route.name);
+      console.log("Screen Stack:", allScreens);
+    });
+  }, []); //For logging screen stack
+
   return (
     <PaperProvider>
       <Provider store={store}>
-        <NavigationContainer>
-          <Stack.Navigator>
+        <NavigationContainer ref={navigationRef}>
+          <Stack.Navigator
+            screenOptions={{
+              ...TransitionPresets.SlideFromRightIOS,
+            }}
+          >
             <Stack.Screen
               options={{ headerShown: false }}
               name="SplashScreen"
@@ -42,11 +60,16 @@ const AppNavigator = () => {
             />
             <Stack.Screen
               options={{ header: () => <Header /> }}
+              name="OrderDetailScreen"
+              component={OrderDetailScreen}
+            />
+            <Stack.Screen
+              options={{ headerShown: false }}
               name="LoginScreen"
               component={LoginScreen}
             />
             <Stack.Screen
-              options={{ header: () => <Header /> }}
+              options={{ headerShown: false }}
               name="RegisterScreen"
               component={RegisterScreen}
             />
@@ -56,29 +79,24 @@ const AppNavigator = () => {
               component={ProductScreen}
             />
             <Stack.Screen
-              options={{ header: () => <Header /> }}
+              options={{ headerShown: false }}
               name="CartScreen"
               component={CartScreen}
             />
             <Stack.Screen
-              options={{ header: () => <Header /> }}
+              options={{ headerShown: false }}
               name="ShippingScreen"
               component={ShippingScreen}
             />
             <Stack.Screen
-              options={{ header: () => <Header /> }}
+              options={{ headerShown: false }}
               name="PaymentScreen"
               component={PaymentScreen}
             />
             <Stack.Screen
-              options={{ header: () => <Header /> }}
+              options={{ headerShown: false }}
               name="PlaceOrderScreen"
               component={PlaceOrderScreen}
-            />
-            <Stack.Screen
-              options={{ header: () => <Header /> }}
-              name="OrderDetailScreen"
-              component={OrderDetailScreen}
             />
             <Stack.Screen
               options={{ headerShown: false }}

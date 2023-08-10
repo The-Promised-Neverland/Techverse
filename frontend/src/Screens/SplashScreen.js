@@ -2,21 +2,15 @@ import { View, Text, StyleSheet, Animated, Easing } from "react-native";
 import React, { useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import Techverse from "../../../assets/favicon.png";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SplashScreen = () => {
   const navigation = useNavigation();
-  
+
   const fadeAnim = new Animated.Value(0);
   const spinAnim = new Animated.Value(0);
 
   const setup = async () => {
-    const data = await AsyncStorage.getItem("userInfo");
-    if (data) {
-      navigation.navigate("HomeScreen");
-    } else {
-      navigation.navigate("LoginScreen");
-    }
+    navigation.navigate("HomeScreen");
   };
 
   useEffect(() => {
@@ -38,7 +32,6 @@ const SplashScreen = () => {
     setTimeout(() => {
       setup();
     }, 3000);
-
   }, [fadeAnim, navigation, spinAnim]);
 
   const spin = spinAnim.interpolate({

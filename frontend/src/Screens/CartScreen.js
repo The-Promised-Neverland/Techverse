@@ -15,6 +15,15 @@ const CartScreen = () => {
   const navigation = useNavigation();
 
   const { cartItems } = useSelector((state) => state.cart);
+  const userInfo = useSelector((state) => state.userLocal.userInfo);
+
+  const checkoutHandler = () => {
+    if (userInfo) {
+      navigation.navigate("ShippingScreen");
+    } else {
+      navigation.navigate("LoginScreen", { redirect: "ShippingScreen" });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -34,12 +43,13 @@ const CartScreen = () => {
           data={cartItems}
           keyExtractor={(item) => item.product}
           renderItem={({ item }) => <CartCard item={item} />} // renders each card
+          initialNumToRender={10}
           ListFooterComponent={
             <View>
               <CartTotalDisplay cartItems={cartItems} />
               <TouchableOpacity
                 style={styles.checkoutButton}
-                onPress={() => navigation.navigate("ShippingScreen")}
+                onPress={checkoutHandler}
               >
                 <Text style={styles.checkoutButtonText}>
                   Proceed to Checkout
@@ -48,6 +58,7 @@ const CartScreen = () => {
             </View>
           }
           showsVerticalScrollIndicator={false}
+          overScrollMode="never"
         />
       )}
     </View>
